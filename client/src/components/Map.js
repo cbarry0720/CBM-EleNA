@@ -8,7 +8,6 @@ export default function Map() {
 			style={{ height: "100vh" }}
 			center={[42.340382, -72.496819]}
 			zoom={13}
-			scrollWheelZoom={false}
 		>
 			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 		</MapContainer>
