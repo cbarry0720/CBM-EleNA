@@ -1,0 +1,15 @@
+.nav-container{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    position: absolute;
+    z-index: 999;
+    margin: 20px 80px;
+    padding: 16px;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 2px;
+}
+.from, .to, .select, .go{
+    margin: 10px;
+}
