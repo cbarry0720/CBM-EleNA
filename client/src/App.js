@@ -5,13 +5,12 @@ import Map from "./components/Map";
 import Navigation from "./components/Navigation";
 
 function App() {
-	const [pointA, setPointA] = useState([]);
-	const [pointB, setPointB] = useState([]);
+	const [path, setPath] = useState([]);
 
 	return (
 		<div>
-			<Navigation setPointA={setPointA} setPointB={setPointB} />
-			<Map pointA={pointA} pointB={pointB} />
+			<Navigation setPath={setPath} />
+			<Map path={path} />
 		</div>
 	);
 }
