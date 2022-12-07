@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "../styles/navigation.css";
+import L from "leaflet";
 import axios from "axios";
-
-export default function Navigation({ setPointA, setPointB }) {
+export default function Navigation({ setPointA, setPointB, setPath }) {
 	const [fromText, setFromText] = useState("");
 	const [toText, setToText] = useState("");
 
@@ -12,47 +12,38 @@ export default function Navigation({ setPointA, setPointB }) {
 		} else if (toText.length === 0) {
 			alert("Please provide a destination");
 		} else {
-			//replace spaces with pluses for url querying
-			let formattedFromText = "";
+			let fromTextFormatted = "";
 			for (let i = 0; i < fromText.length; i++) {
-				formattedFromText +=
-					fromText.charAt(i) === " " ? "+" : fromText.charAt(i);
+				if (fromText[i] === " ") {
+					fromTextFormatted += "+";
+				} else {
+					fromTextFormatted += fromText[i];
+				}
 			}
-			let formattedToText = "";
+			let toTextFormatted = "";
 			for (let i = 0; i < toText.length; i++) {
-				formattedToText +=
-					toText.charAt(i) === " " ? "+" : toText.charAt(i);
+				if (toText[i] === " ") {
+					toTextFormatted += "+";
+				} else {
+					toTextFormatted += toText[i];
+				}
 			}
 
-			//search from/to locations
-			const fromResponse = await axios.get(
-				"https://nominatim.openstreetmap.org/search?format=geocodejson&q=" +
-					formattedFromText
-			);
-			const toResponse = await axios.get(
-				"https://nominatim.openstreetmap.org/search?format=geocodejson&q=" +
-					formattedToText
-			);
-			//list of from and to locations
-			const fromLocations = fromResponse.data.features;
-			const toLocations = toResponse.data.features;
-
-			//coordinate arrays for top from/to searches
-			const topFromCoord = fromLocations[0].geometry.coordinates;
-			const topToCoord = toLocations[0].geometry.coordinates;
-
-			//swap latitute/longitude coordinate locations
-			let temp = topToCoord[0];
-			topToCoord[0] = topToCoord[1];
-			topToCoord[1] = temp;
-
-			//swap latitute/longitude coordinate locations
-			temp = topFromCoord[0];
-			topFromCoord[0] = topFromCoord[1];
-			topFromCoord[1] = temp;
-
-			setPointA(topFromCoord);
-			setPointB(topToCoord);
+			const url =
+				"http://127.0.0.1:5000/route?start=" +
+				fromTextFormatted +
+				"&finish=" +
+				toTextFormatted +
+				"&routeMultiplier=2";
+			try {
+				const response = await axios.get(url);
+				const data = response.data;
+				const route = data.route;
+				setPath(route.map((point) => L.latLng(point.y, point.x)));
+			} catch (error) {
+				alert("Invalid location(s)");
+				console.log(error);
+			}
 		}
 	};
 
