@@ -12,6 +12,7 @@ import rasterio
 import json
 from flask import Flask, request, jsonify
 import time
+from flask_cors import CORS, cross_origin
 ox.config(log_console=True, use_cache=True)
 
 place = 'Amherst, MA'
@@ -118,7 +119,11 @@ def getPathBetween(G,start, end,k=2):
     return best_path,best_elevation,best_dist
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 @app.route('/route')
+@cross_origin()
 def query_route():
     start = request.args.get('start')
     finish = request.args.get('finish')
