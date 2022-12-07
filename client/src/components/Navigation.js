@@ -35,11 +35,15 @@ export default function Navigation({ setPointA, setPointB, setPath }) {
 				"&finish=" +
 				toTextFormatted +
 				"&routeMultiplier=2";
-			const response = await axios.get(url);
-			const data = response.data;
-			console.log(data);
-			const route = data.route;
-			setPath(route.map((point) => L.latLng(point.y, point.x)));
+			try {
+				const response = await axios.get(url);
+				const data = response.data;
+				const route = data.route;
+				setPath(route.map((point) => L.latLng(point.y, point.x)));
+			} catch (error) {
+				alert("Invalid location(s)");
+				console.log(error);
+			}
 		}
 	};
 
