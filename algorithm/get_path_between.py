@@ -22,11 +22,13 @@ def getPathBetween(G,start, end,k=2):
     K_paths = list(paths)
     best_path = []
     best_val = 99999999999
+    best_dist = 0
+    best_elevation = 0
     #for every path returned calculate the distance and total elevation change then return shortest path with smallest changes
     for path in K_paths:
         dist = 0
         elevation_change = 0
-
+        
         for i in range(0, len(path)-1):
             node1 = path[i]
             node2 = path[i+1]
@@ -46,14 +48,9 @@ def getPathBetween(G,start, end,k=2):
 
         if dist+elevation_change < best_val:
             best_val = dist+elevation_change
+            best_dist = dist
+            best_elevation = elevation_change
             best_path = path
-    return best_path
-
-# start = time.time()
-# path = getPathBetween(G, "Spoke Amherst", "Crazy Noodles Amherst",4)
-# print(f'Time: {time.time() - start}')
-
-# newGraph = nx.subgraph(G, path)
-# fig, ax = ox.plot_graph(newGraph, figsize=(10,10))
+    return best_path, best_dist, best_elevation
 
    
