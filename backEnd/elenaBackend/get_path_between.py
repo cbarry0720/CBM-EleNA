@@ -1,6 +1,7 @@
 import osmnx as ox
 import sys
 import json
+import math
 class get_path_between:
     __start_loc = None
     __end_loc = None
@@ -41,7 +42,14 @@ class get_path_between:
         return best_path
 
 
-    def get_best_path(self, k):
+    def minimize_total_dist(self, elevation_change, dist):
+        return math.sqrt(elevation_change**2 + dist**2)
+
+    def minimize_elevation_and_dist(self, elevation_change, dist):
+        return elevation_change + dist
+
+
+    def get_best_path(self, k, minimizer):
         paths = self.get_k_shortest_paths(k)
         if paths == 0:
             print("Start node is the same as end node")
@@ -70,11 +78,11 @@ class get_path_between:
                 
                 smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
                 dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
-
+                
                 elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
 
             if dist + elevation_change < best_path_score:
-                best_path_score = dist + elevation_change
+                best_path_score = minimizer(elevation_change, dist)
                 best_elevation_change = elevation_change
                 best_path_dist = dist
                 best_path = path
