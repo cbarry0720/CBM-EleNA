@@ -39,6 +39,13 @@ export default function Navigation({ setPointA, setPointB, setPath }) {
 				const response = await axios.get(url);
 				const data = response.data;
 				const route = data.route;
+				if (
+					route[0].x === route[route.length - 1].x &&
+					route[0].y === route[route.length - 1].y
+				) {
+					alert("Cannot use same location for start and end");
+					return;
+				}
 				setPath(route.map((point) => L.latLng(point.y, point.x)));
 			} catch (error) {
 				alert("Invalid location(s)");
@@ -48,7 +55,7 @@ export default function Navigation({ setPointA, setPointB, setPath }) {
 	};
 
 	return (
-		<div className="nav-container">
+		<div data-testid="nav-container" className="nav-container">
 			<input
 				className="from"
 				placeholder="From"
