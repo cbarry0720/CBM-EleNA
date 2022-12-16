@@ -10,11 +10,14 @@ export default function Navigation({ setPath }) {
 
 	const formOnSubmit = async (e) => {
 		e.preventDefault();
+
+		// Check if both fields are filled
 		if (fromText.length === 0) {
 			alert("Please provide a starting location");
 		} else if (toText.length === 0) {
 			alert("Please provide a destination");
 		} else {
+			// Format the text to be used in the url
 			let fromTextFormatted = "";
 			for (let i = 0; i < fromText.length; i++) {
 				if (fromText[i] === " ") {
@@ -32,6 +35,7 @@ export default function Navigation({ setPath }) {
 				}
 			}
 
+			// Get the route from the server
 			const url =
 				"http://127.0.0.1:5000/route?start=" +
 				fromTextFormatted +
@@ -44,6 +48,8 @@ export default function Navigation({ setPath }) {
 				const response = await axios.get(url);
 				const data = response.data;
 				const route = data.route;
+
+				// Check if the route is valid
 				if (
 					route[0].x === route[route.length - 1].x &&
 					route[0].y === route[route.length - 1].y
@@ -51,6 +57,8 @@ export default function Navigation({ setPath }) {
 					alert("Cannot use same location for start and end");
 					return;
 				}
+
+				// Set the path on the map
 				setPath(route.map((point) => L.latLng(point.y, point.x)));
 			} catch (error) {
 				alert("Invalid location(s)");
