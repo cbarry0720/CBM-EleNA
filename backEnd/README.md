@@ -3,9 +3,9 @@ main.py contains all the code that gets locations from front end react and retur
 
 python version should be 3.x.x
 
-in python enviroment run the import_python_packages.py file from command line 
+in python enviroment run the command below
 
 ```
-python3 import_python_packages.py
+pip install -r requirments.txt 
 ```
 this will install all the necessary python packages
