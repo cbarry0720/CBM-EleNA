@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../styles/navigation.css";
 import L from "leaflet";
 import axios from "axios";
-export default function Navigation({ setPointA, setPointB, setPath }) {
+export default function Navigation({ setPath }) {
 	const [fromText, setFromText] = useState("");
 	const [toText, setToText] = useState("");
 
