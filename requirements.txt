@@ -1,0 +1,5 @@
+osmnx
+flask
+pytest
+pytest-mock
+coverage
