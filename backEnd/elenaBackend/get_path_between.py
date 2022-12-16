@@ -16,22 +16,40 @@ class get_path_between:
         return ox.nearest_nodes(self.__G, loc[1], loc[0])
 
     def get_k_shortest_paths(self, k):
+        if k == 0:
+            print('invalid k')
+            return 0
+
         start_node = ox.nearest_nodes(self.__G, self.__start_loc[1], self.__start_loc[0])
         end_node = ox.nearest_nodes(self.__G, self.__end_loc[1], self.__end_loc[0])
+
         if self.__start_loc == self.__end_loc:
             return 0
         return ox.k_shortest_paths(self.__G, start_node,end_node, k)
     
     def get_node_longitiude(node):
+        if node == None:
+            print('invalid node')
+            return None
         return node['x']
 
     def get_node_latitude(node):
+        if node == None:
+            print('invalid node')
+            return None
         return node['y']
 
     def get_node_elevation(self, node):
+        if node == None:
+            print('invalid node')
+            return None
         return self.__G.nodes[node]['elevation']
 
     def __get_path_between_adj_nodes(self, paths, node1, node2):
+        if node1 == None or node2 == None or paths == None:
+            print('invalid input')
+            return None
+
         best_path = None
         best_dist = sys.maxsize
         for path in paths:
@@ -48,11 +66,30 @@ class get_path_between:
     def minimize_elevation_and_dist(self, elevation_change, dist):
         return elevation_change + dist
 
+    def minimize_elevation(self, elevation_change, dist):
+        return elevation_change
+    def minimize_dist(self, elevation_change, dist):
+        return dist
+
+    def get_elevation_change(self, node1, node2):
+        if node1 == None or node2 == None:
+            print('invalid node')
+            return None
+
+        return abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
+
+    def get_distance_change(self, node1, node2):
+            if node1 == None or node2 == None:
+                print('invalid node')
+                return None
+            smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)    
+            return self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
     def get_best_path(self, k, minimizer):
         paths = self.get_k_shortest_paths(k)
+        
         if paths == 0:
-            print("Start node is the same as end node")
+            print("Start node is the same as end node or invalid K")
             return None, None, None
 
         k_paths = list(paths)
@@ -63,7 +100,7 @@ class get_path_between:
         if len(k_paths) == 2:
             node1 = path[0]
             node2 = path[1]
-            best_elevation_change =  abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
+            best_elevation_change =  self.get_elevation_change(node1,node2)
             best_path_dist =  self.__G.get_edge_data(node1,node2)[0]['length']
             best_path = k_paths
             return best_path,best_elevation_change,best_path_dist
@@ -75,16 +112,16 @@ class get_path_between:
             for i in range(0, len(path) - 1):
                 node1 = path[i]
                 node2 = path[i + 1]
-                
-                smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
-                dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
-                
-                elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
 
-            if dist + elevation_change < best_path_score:
+                dist += self.get_distance_change(node1, node2)
+                elevation_change +=  self.get_elevation_change(node1,node2)
+
+            if minimizer(elevation_change, dist) < best_path_score:
                 best_path_score = minimizer(elevation_change, dist)
                 best_elevation_change = elevation_change
                 best_path_dist = dist
                 best_path = path
+            # print(path, elevation_change)
+        # print(path, best_elevation_change)
                 
         return best_path,best_elevation_change,best_path_dist
