@@ -5,6 +5,8 @@ import axios from "axios";
 export default function Navigation({ setPath }) {
 	const [fromText, setFromText] = useState("");
 	const [toText, setToText] = useState("");
+	const [elevationOption, setElevationOption] =
+		useState("Maximize Elevation");
 
 	const formOnSubmit = async (e) => {
 		e.preventDefault();
@@ -35,7 +37,9 @@ export default function Navigation({ setPath }) {
 				fromTextFormatted +
 				"&finish=" +
 				toTextFormatted +
-				"&routeMultiplier=2";
+				"&routeMultiplier=2" +
+				"&min=" +
+				(elevationOption === "Maximize Elevation" ? "False" : "True");
 			try {
 				const response = await axios.get(url);
 				const data = response.data;
@@ -72,7 +76,12 @@ export default function Navigation({ setPath }) {
 						setToText(e.target.value);
 					}}
 				/>
-				<select className="select">
+				<select
+					onChange={(e) => {
+						setElevationOption(e.target.value);
+					}}
+					className="select"
+				>
 					<option>Maximize Elevation</option>
 					<option>Minimize Elevation</option>
 				</select>
