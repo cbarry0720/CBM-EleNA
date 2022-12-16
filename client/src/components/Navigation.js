@@ -41,7 +41,7 @@ export default function Navigation({ setPath }) {
 				fromTextFormatted +
 				"&finish=" +
 				toTextFormatted +
-				"&routeMultiplier=2" +
+				"&routeMultiplier=10" +
 				"&min=" +
 				(elevationOption === "Maximize Elevation" ? "False" : "True");
 			try {
