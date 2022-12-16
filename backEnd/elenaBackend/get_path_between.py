@@ -80,33 +80,3 @@ class get_path_between:
                 best_path = path
                 
         return best_path,best_elevation_change,best_path_dist
-
-ox.config(log_console=True, use_cache=True)
-
-place = 'Amherst, MA'
-G = ox.graph_from_place(place)
-print(len(G))
-f = open("elevationTxt.txt","r")
-resultList = list()
-lists = json.load(f)
-#print(lists)
-f.close()
-xValues = dict()
-for x in lists:
-    if xValues.get(x['longitude']) is None:
-        xValues[x['longitude']] = {x['latitude']:x}
-    else:
-        xValues[x['longitude']][x['latitude']] = x
-
-
-for key in G.nodes.keys():
-    node = G.nodes.get(key)
-    xval = node['x']
-    yval = node['y']
-    node['elevation'] = xValues[xval][yval]['elevation']
-    if node['elevation'] is None:
-        print("Error")
-
-path = get_path_between("Spoke Amherst", "Umass Amherst", G)
-
-print(path.get_best_path(3))
