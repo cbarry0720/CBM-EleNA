@@ -1,5 +1,7 @@
 osmnx
-flask
 pytest
 pytest-mock
 coverage
+flask_cors
+
+flask == 2.2.2
