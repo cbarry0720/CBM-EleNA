@@ -18,7 +18,7 @@ def test_3NodeGraph():
     pathBetween.set_end_node(3)
     assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist,True)[1] == 32
 
-def test_3NodeGraph():
+def test_3NodeGraph_max():
     graph = nx.MultiDiGraph()
     graph.add_node(1,y=0, x=0,street_count= 4, elevation=64)
     graph.add_node(2, y=100, x=100, street_count=4, elevation=96)
