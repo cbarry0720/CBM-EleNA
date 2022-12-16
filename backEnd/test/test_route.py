@@ -88,6 +88,8 @@ def test_input_validation():
     assert pathBetween.get_path_between_adj_nodes(None, 1,2) == None
     assert pathBetween.get_path_between_adj_nodes(1, None,2) == None
     assert pathBetween.get_path_between_adj_nodes(1, 2,None) == None
+    assert pathBetween.get_node_elevation(None) == None
+
     
     pathBetween = get_path_between(1, 1, graph)
     pathBetween.set_start_node(1)
@@ -153,9 +155,9 @@ def test_3NodeGraph_max_elevation():
     pathBetween = get_path_between(1, 3, graph)
     pathBetween.set_start_node(1)
     pathBetween.set_end_node(3)
-    assert pathBetween.get_best_path(1,pathBetween.minimize_elevation,False)[2] == 64
+    assert pathBetween.get_best_path(1,pathBetween.minimize_elevation,False)[2] == 5
 
-def test_3NodeGraph_max_elevation():
+def test_3NodeGraph_min_totalDist():
     graph = nx.MultiDiGraph()
     graph.add_node(1,y=0, x=0,street_count= 4, elevation=64)
     graph.add_node(2, y=100, x=100, street_count=4, elevation=96)
@@ -168,4 +170,4 @@ def test_3NodeGraph_max_elevation():
     pathBetween = get_path_between(1, 3, graph)
     pathBetween.set_start_node(1)
     pathBetween.set_end_node(3)
-    assert pathBetween.get_best_path(1,pathBetween.minimize_total_dist,False)[1] == 32
+    assert pathBetween.get_best_path(1,pathBetween.minimize_total_dist,True)[1] == 32
