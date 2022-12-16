@@ -33,7 +33,7 @@ class get_path_between:
             return None
         return self.__G.nodes[node]['elevation']
 
-    def __get_path_between_adj_nodes(self, paths, node1, node2):
+    def get_path_between_adj_nodes(self, paths, node1, node2):
         if node1 == None or node2 == None or paths == None:
             print('invalid input')
             return None
@@ -56,6 +56,7 @@ class get_path_between:
 
     def minimize_elevation(self, elevation_change, dist):
         return elevation_change
+        
     def minimize_dist(self, elevation_change, dist):
         return dist
 
@@ -66,12 +67,6 @@ class get_path_between:
 
         return abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
 
-    # def get_distance_change(self, node1, node2):
-    #         if node1 == None or node2 == None:
-    #             print('invalid node')
-    #             return None
-    #         smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
-    #         return self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
     def get_best_path(self, k, minimizer, min):
         paths = self.get_k_shortest_paths(k)
@@ -98,7 +93,7 @@ class get_path_between:
                     node1 = path[i]
                     node2 = path[i + 1]
 
-                    smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
+                    smallest_between_two = self.get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
                     dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
                     elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
