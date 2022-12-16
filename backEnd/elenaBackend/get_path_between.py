@@ -5,27 +5,26 @@ class get_path_between:
     __start_loc = None
     __end_loc = None
     __G = None
-    
+    __start_node = None
+    __end_node = None
     def __init__(self, start_loc, end_loc, G):
         self.__start_loc = ox.geocode(start_loc)
         self.__end_loc = ox.geocode(end_loc)
         self.__G = G
+        self.__start_node = ox.nearest_nodes(self.__G, self.__start_loc[1], self.__start_loc[0])
+        self.__end_node = ox.nearest_nodes(self.__G, self.__end_loc[1], self.__end_loc[0])
 
-    def get_location_node(self,loc):
-        return ox.nearest_nodes(self.__G, loc[1], loc[0])
+    #Used For Testing to bypass ox.nearestNodes
+    def set_start_node(self,startNode):
+        self.__start_node = startNode
+    def set_end_node(self,endNode):
+        self.__end_node = endNode;
 
     def get_k_shortest_paths(self, k):
-        start_node = ox.nearest_nodes(self.__G, self.__start_loc[1], self.__start_loc[0])
-        end_node = ox.nearest_nodes(self.__G, self.__end_loc[1], self.__end_loc[0])
+
         if self.__start_loc == self.__end_loc:
             return 0
-        return ox.k_shortest_paths(self.__G, start_node,end_node, k)
-    
-    def get_node_longitiude(node):
-        return node['x']
-
-    def get_node_latitude(node):
-        return node['y']
+        return ox.k_shortest_paths(self.__G, self.__start_node,self.__end_node, k)
 
     def get_node_elevation(self, node):
         return self.__G.nodes[node]['elevation']
@@ -45,33 +44,30 @@ class get_path_between:
         paths = self.get_k_shortest_paths(k)
         if paths == 0:
             print("Start node is the same as end node")
-            return None, None, None
+            return [self.__start_node], 0, 0
 
         k_paths = list(paths)
         best_path_score = sys.maxsize
         best_elevation_change = 0
         best_path_dist = 0
-        
-        if len(k_paths) == 2:
-            node1 = path[0]
-            node2 = path[1]
-            best_elevation_change =  abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
-            best_path_dist =  self.__G.get_edge_data(node1,node2)[0]['length']
-            best_path = k_paths
-            return best_path,best_elevation_change,best_path_dist
-        
+
         for path in k_paths:
             dist = 0
             elevation_change = 0
+            if len(path) == 2:
+                node1 = path[0]
+                node2 = path[1]
+                elevation_change = abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
+                dist = self.__G.get_edge_data(node1, node2)[0]['length']
+            else:
+                for i in range(0, len(path) - 1):
+                    node1 = path[i]
+                    node2 = path[i + 1]
 
-            for i in range(0, len(path) - 1):
-                node1 = path[i]
-                node2 = path[i + 1]
-                
-                smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
-                dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
+                    smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
+                    dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
-                elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
+                    elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
 
             if dist + elevation_change < best_path_score:
                 best_path_score = dist + elevation_change
