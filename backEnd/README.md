@@ -6,7 +6,7 @@ python version should be 3.x.x
 in python enviroment run the command below
 
 ```
-pip install -r requirments.txt 
+pip install -r requirements.txt 
 ```
 this will install all the necessary python packages
 
