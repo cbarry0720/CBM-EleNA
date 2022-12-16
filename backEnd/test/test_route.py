@@ -1,19 +1,7 @@
-import mock as mock
 import pytest
-from backEnd.elenaBackend import create_app
 from backEnd.elenaBackend.get_path_between import get_path_between
-import json
 import networkx as nx
-import osmnx as ox
-from unittest import mock
-@pytest.fixture()
-def app():
-    app = create_app()
 
-    yield app
-@pytest.fixture()
-def client(app):
-    return app.test_client()
 
 def test_3NodeGraph():
     graph = nx.MultiDiGraph()
@@ -28,7 +16,6 @@ def test_3NodeGraph():
     pathBetween = get_path_between(1, 3, graph)
     pathBetween.set_start_node(1)
     pathBetween.set_end_node(3)
-   # assert getPathBetween(graph,1,3,2)[2] == 0
     assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[1] == 32
 
 def test_5NodeGraphSameLengths():
@@ -47,7 +34,6 @@ def test_5NodeGraphSameLengths():
     pathBetween = get_path_between(1, 5, graph)
     pathBetween.set_start_node(1)
     pathBetween.set_end_node(5)
-   # assert getPathBetween(graph,1,3,2)[2] == 0
     assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[1] == 64
     assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[2] == 10
 
@@ -66,28 +52,5 @@ def test_3NodeGraphTotalDistance():
    # assert getPathBetween(graph,1,3,2)[2] == 0
     assert pathBetween.get_best_path(2,pathBetween.minimize_total_dist)[2] == 4
     assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[1] == 2
-def test_SameStartAndEnd(client):
-    response = client.get('/route?start=spoke amherst&finish=spoke amherst&routeMultiplier=1')
-    responseTxt = json.loads(response.data.decode('utf-8'))
-    assert responseTxt["totalElevation"] == 0
 
-
-
-def test_apiCallDeciphered(app,client, mocker):
-    #Ensure calls to the api are being made entrusting api to work
-    mockRequest = mocker.patch("osmnx.geocode")
-    response = client.get('/route?start=spoke amherst&finish=stackers amherst&routeMultiplier=1')
-    mockRequest.assert_any_call("spoke amherst")
-    mockRequest.assert_any_call("stackers amherst")
-
-def test_emptyStrings(client):
-    response = client.get('/route?start=&finish=&routeMultiplier=')
-    responseTxt = response.data.decode('utf-8')
-    assert len(responseTxt) == 0
-    assert responseTxt == ""
-
-def test_SpokeStackersPath(client):
-    response = client.get('/route?start=spoke amherst&finish=stackers amherst&routeMultiplier=1')
-    responseTxt = json.loads(response.data.decode('utf-8'))
-    assert responseTxt["totalElevation"] == 8
 
