@@ -73,7 +73,7 @@ class get_path_between:
             smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
             return self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
-    def get_best_path(self, k, minimizer):
+    def get_best_path(self, k, minimizer, min):
         paths = self.get_k_shortest_paths(k)
 
         if paths == 0:
@@ -81,7 +81,7 @@ class get_path_between:
             return [self.__start_node], 0, 0
 
         k_paths = list(paths)
-        best_path_score = sys.maxsize
+        best_path_score = None
         best_elevation_change = 0
         best_path_dist = 0
 
@@ -102,11 +102,21 @@ class get_path_between:
                     dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
                     elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
-
-            if minimizer(elevation_change,dist) < best_path_score:
-                best_path_score = minimizer(elevation_change, dist)
-                best_elevation_change = elevation_change
-                best_path_dist = dist
-                best_path = path
+            if min:
+                if best_path_score == None:
+                    best_path_score = sys.maxsize
+                if minimizer(elevation_change,dist) < best_path_score:
+                    best_path_score = minimizer(elevation_change, dist)
+                    best_elevation_change = elevation_change
+                    best_path_dist = dist
+                    best_path = path
+            else:
+                if best_path_score == None:
+                    best_path_score = -sys.maxsize
+                if minimizer(elevation_change,dist) > best_path_score:
+                    best_path_score = minimizer(elevation_change, dist)
+                    best_elevation_change = elevation_change
+                    best_path_dist = dist
+                    best_path = path
                 
         return best_path,best_elevation_change,best_path_dist
