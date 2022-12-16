@@ -6,7 +6,8 @@ export default function Navigation({ setPointA, setPointB, setPath }) {
 	const [fromText, setFromText] = useState("");
 	const [toText, setToText] = useState("");
 
-	const buttonOnClick = async () => {
+	const formOnSubmit = async (e) => {
+		e.preventDefault();
 		if (fromText.length === 0) {
 			alert("Please provide a starting location");
 		} else if (toText.length === 0) {
@@ -56,27 +57,29 @@ export default function Navigation({ setPointA, setPointB, setPath }) {
 
 	return (
 		<div data-testid="nav-container" className="nav-container">
-			<input
-				className="from"
-				placeholder="From"
-				onChange={(e) => {
-					setFromText(e.target.value);
-				}}
-			/>
-			<input
-				className="to"
-				placeholder="To"
-				onChange={(e) => {
-					setToText(e.target.value);
-				}}
-			/>
-			<select className="select">
-				<option>Maximize Elevation</option>
-				<option>Minimize Elevation</option>
-			</select>
-			<button className="go" type="button" onClick={buttonOnClick}>
-				Go
-			</button>
+			<form onSubmit={formOnSubmit}>
+				<input
+					className="from"
+					placeholder="From"
+					onChange={(e) => {
+						setFromText(e.target.value);
+					}}
+				/>
+				<input
+					className="to"
+					placeholder="To"
+					onChange={(e) => {
+						setToText(e.target.value);
+					}}
+				/>
+				<select className="select">
+					<option>Maximize Elevation</option>
+					<option>Minimize Elevation</option>
+				</select>
+				<button className="go" type="submit">
+					Go
+				</button>
+			</form>
 		</div>
 	);
 }
