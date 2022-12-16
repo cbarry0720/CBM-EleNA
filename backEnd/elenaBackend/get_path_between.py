@@ -103,7 +103,7 @@ class get_path_between:
 
                     elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
 
-            if dist + elevation_change < best_path_score:
+            if minimizer(elevation_change,dist) < best_path_score:
                 best_path_score = minimizer(elevation_change, dist)
                 best_elevation_change = elevation_change
                 best_path_dist = dist

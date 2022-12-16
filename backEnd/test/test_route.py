@@ -29,7 +29,7 @@ def test_3NodeGraph():
     pathBetween.set_start_node(1)
     pathBetween.set_end_node(3)
    # assert getPathBetween(graph,1,3,2)[2] == 0
-    assert pathBetween.get_best_path(2)[1] == 32
+    assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[1] == 32
 
 def test_5NodeGraphSameLengths():
     graph = nx.MultiDiGraph()
@@ -48,8 +48,24 @@ def test_5NodeGraphSameLengths():
     pathBetween.set_start_node(1)
     pathBetween.set_end_node(5)
    # assert getPathBetween(graph,1,3,2)[2] == 0
-    assert pathBetween.get_best_path(2)[1] == 64
-    assert pathBetween.get_best_path(2)[2] == 10
+    assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[1] == 64
+    assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[2] == 10
+
+def test_3NodeGraphTotalDistance():
+    graph = nx.MultiDiGraph()
+    graph.add_node(1,y=0, x=0,street_count=4, elevation=2)
+    graph.add_node(2, y=100, x=100, street_count=4, elevation=2)
+    graph.add_node(3, y=100, x=100, street_count=4, elevation=4)
+    graph.add_edge(1,2,weight=10,length=2)
+    graph.add_edge(2,3,weight=10,length=2)
+
+    graph.graph["crs"] = "epsg:4326"
+    pathBetween = get_path_between(1, 3, graph)
+    pathBetween.set_start_node(1)
+    pathBetween.set_end_node(3)
+   # assert getPathBetween(graph,1,3,2)[2] == 0
+    assert pathBetween.get_best_path(2,pathBetween.minimize_total_dist)[2] == 4
+    assert pathBetween.get_best_path(2,pathBetween.minimize_elevation_and_dist)[1] == 2
 def test_SameStartAndEnd(client):
     response = client.get('/route?start=spoke amherst&finish=spoke amherst&routeMultiplier=1')
     responseTxt = json.loads(response.data.decode('utf-8'))

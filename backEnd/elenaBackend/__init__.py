@@ -57,11 +57,12 @@ def create_app(test_config=None):
             return ""
         multiplier = int(request.args.get('routeMultiplier'))
         app.logger.info("Request Received for route between " + start + " and " + finish + " with multiplier " + str(multiplier))
-        pathBetween = get_path_between(start, finish, G).get_best_path(multiplier)
+        pathBetween = get_path_between(start, finish, G)
+        bestPathBetween = pathBetween.get_best_path(multiplier,pathBetween.minimize_elevation_and_dist)
         output = list()
-        for nodes in pathBetween[0]:
+        for nodes in bestPathBetween[0]:
             output.append(G.nodes.get(nodes))
-        result = outputObject(output, pathBetween[2], pathBetween[1])
+        result = outputObject(output, bestPathBetween[2], bestPathBetween[1])
         return result.toJSON()
 
     return app
