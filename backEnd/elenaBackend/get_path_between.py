@@ -28,9 +28,16 @@ class get_path_between:
         return ox.k_shortest_paths(self.__G, self.__start_node,self.__end_node, k)
 
     def get_node_elevation(self, node):
+        if node == None:
+            print('invalid node')
+            return None
         return self.__G.nodes[node]['elevation']
 
     def __get_path_between_adj_nodes(self, paths, node1, node2):
+        if node1 == None or node2 == None or paths == None:
+            print('invalid input')
+            return None
+
         best_path = None
         best_dist = sys.maxsize
         for path in paths:
@@ -47,9 +54,28 @@ class get_path_between:
     def minimize_elevation_and_dist(self, elevation_change, dist):
         return elevation_change + dist
 
+    def minimize_elevation(self, elevation_change, dist):
+        return elevation_change
+    def minimize_dist(self, elevation_change, dist):
+        return dist
+
+    def get_elevation_change(self, node1, node2):
+        if node1 == None or node2 == None:
+            print('invalid node')
+            return None
+
+        return abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
+
+    def get_distance_change(self, node1, node2):
+            if node1 == None or node2 == None:
+                print('invalid node')
+                return None
+            smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
+            return self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
     def get_best_path(self, k, minimizer):
         paths = self.get_k_shortest_paths(k)
+
         if paths == 0:
             print("Start node is the same as end node")
             return [self.__start_node], 0, 0
