@@ -16,6 +16,7 @@ from flask import Flask, request, jsonify
 import time
 import logging
 from backEnd.elenaBackend.get_path_between import get_path_between
+from flask_cors import CORS, cross_origin
 
 
 def iniateGraph():
@@ -45,10 +46,13 @@ def create_app(test_config=None):
     # create and configure the app
     logging.basicConfig(filename='record.log', level=logging.DEBUG)
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     G = iniateGraph()
     # a simple page that says hello
 
+
     @app.route('/route')
+    @cross_origin()
     def query_route():
         start = request.args.get('start')
         finish = request.args.get('finish')
