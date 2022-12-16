@@ -1,19 +1,7 @@
-import os
-
-import geopandas as gpd
-import pandas as pd
-import requests
-from shapely.geometry import Point, LineString, Polygon
-import networkx as nx
 import osmnx as ox
 import json
-import matplotlib.pyplot as plt
-from descartes import PolygonPatch
-from IPython.display import IFrame
-import rasterio
 import json
 from flask import Flask, request, jsonify
-import time
 import logging
 from backEnd.elenaBackend.get_path_between import get_path_between
 from flask_cors import CORS, cross_origin
@@ -56,13 +44,15 @@ def create_app(test_config=None):
     def query_route():
         start = request.args.get('start')
         finish = request.args.get('finish')
+        min = request.args.get('min')
+
         if start is None or finish is None or start == "" or finish == "":
             app.logger.warning("Either empty strings or missing parameters")
             return ""
         multiplier = int(request.args.get('routeMultiplier'))
         app.logger.info("Request Received for route between " + start + " and " + finish + " with multiplier " + str(multiplier))
         pathBetween = get_path_between(start, finish, G)
-        bestPathBetween = pathBetween.get_best_path(multiplier,pathBetween.minimize_elevation_and_dist)
+        bestPathBetween = pathBetween.get_best_path(multiplier,pathBetween.minimize_elevation_and_dist, min)
         output = list()
         for nodes in bestPathBetween[0]:
             output.append(G.nodes.get(nodes))

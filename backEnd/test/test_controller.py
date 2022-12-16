@@ -14,7 +14,7 @@ def client(app):
     return app.test_client()
 
 def test_SameStartAndEnd(client):
-    response = client.get('/route?start=spoke amherst&finish=spoke amherst&routeMultiplier=1')
+    response = client.get('/route?start=spoke amherst&finish=spoke amherst&routeMultiplier=1&min=True')
     responseTxt = json.loads(response.data.decode('utf-8'))
     assert responseTxt["totalElevation"] == 0
 
@@ -23,7 +23,7 @@ def test_SameStartAndEnd(client):
 def test_apiCallDeciphered(app,client, mocker):
     #Ensure calls to the api are being made entrusting api to work
     mockRequest = mocker.patch("osmnx.geocode")
-    response = client.get('/route?start=spoke amherst&finish=stackers amherst&routeMultiplier=1')
+    response = client.get('/route?start=spoke amherst&finish=stackers amherst&routeMultiplier=1&min=True')
     mockRequest.assert_any_call("spoke amherst")
     mockRequest.assert_any_call("stackers amherst")
 
@@ -34,6 +34,6 @@ def test_emptyStrings(client):
     assert responseTxt == ""
 
 def test_SpokeStackersPath(client):
-    response = client.get('/route?start=spoke amherst&finish=stackers amherst&routeMultiplier=1')
+    response = client.get('/route?start=spoke amherst&finish=stackers amherst&routeMultiplier=1&min=True')
     responseTxt = json.loads(response.data.decode('utf-8'))
     assert responseTxt["totalElevation"] == 8

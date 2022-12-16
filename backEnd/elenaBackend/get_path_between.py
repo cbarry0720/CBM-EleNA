@@ -21,19 +21,21 @@ class get_path_between:
     def set_end_node(self,endNode):
         self.__end_node = endNode;
 
+#Takes interger K and finds the K shortest paths  between the two nodes
     def get_k_shortest_paths(self, k):
 
         if self.__start_loc == self.__end_loc:
             return 0
         return ox.k_shortest_paths(self.__G, self.__start_node,self.__end_node, k)
-
+# gets the elevation of a single node
     def get_node_elevation(self, node):
         if node == None:
             print('invalid node')
             return None
         return self.__G.nodes[node]['elevation']
 
-    def __get_path_between_adj_nodes(self, paths, node1, node2):
+# takes the path and two nodes and finds the shortest edge between those two nodes
+    def get_path_between_adj_nodes(self, paths, node1, node2):
         if node1 == None or node2 == None or paths == None:
             print('invalid input')
             return None
@@ -47,18 +49,20 @@ class get_path_between:
                 best_path = path
         return best_path
 
-
+# computes the triangle distance
     def minimize_total_dist(self, elevation_change, dist):
         return math.sqrt(elevation_change**2 + dist**2)
 
+# computes the total change in elevation and distance
     def minimize_elevation_and_dist(self, elevation_change, dist):
         return elevation_change + dist
-
+# returns the elvation changes
     def minimize_elevation(self, elevation_change, dist):
         return elevation_change
+# returns the distance    
     def minimize_dist(self, elevation_change, dist):
         return dist
-
+#  takes in two nodes and returns the difference in elevation
     def get_elevation_change(self, node1, node2):
         if node1 == None or node2 == None:
             print('invalid node')
@@ -66,14 +70,8 @@ class get_path_between:
 
         return abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
 
-    def get_distance_change(self, node1, node2):
-            if node1 == None or node2 == None:
-                print('invalid node')
-                return None
-            smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
-            return self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
-    def get_best_path(self, k, minimizer):
+    def get_best_path(self, k, minimizer, min):
         paths = self.get_k_shortest_paths(k)
 
         if paths == 0:
@@ -81,7 +79,7 @@ class get_path_between:
             return [self.__start_node], 0, 0
 
         k_paths = list(paths)
-        best_path_score = sys.maxsize
+        best_path_score = None
         best_elevation_change = 0
         best_path_dist = 0
 
@@ -98,15 +96,25 @@ class get_path_between:
                     node1 = path[i]
                     node2 = path[i + 1]
 
-                    smallest_between_two = self.__get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
+                    smallest_between_two = self.get_path_between_adj_nodes(self.__G.get_edge_data(node1,node2), node1, node2)
                     dist += self.__G.get_edge_data(node1,node2)[smallest_between_two]['length']
 
-                    elevation_change += abs(self.get_node_elevation(node1) - self.get_node_elevation(node2))
-
-            if minimizer(elevation_change,dist) < best_path_score:
-                best_path_score = minimizer(elevation_change, dist)
-                best_elevation_change = elevation_change
-                best_path_dist = dist
-                best_path = path
+                    elevation_change += self.get_elevation_change(node1, node2)
+            if min:
+                if best_path_score == None:
+                    best_path_score = sys.maxsize
+                if minimizer(elevation_change,dist) < best_path_score:
+                    best_path_score = minimizer(elevation_change, dist)
+                    best_elevation_change = elevation_change
+                    best_path_dist = dist
+                    best_path = path
+            else:
+                if best_path_score == None:
+                    best_path_score = -sys.maxsize
+                if minimizer(elevation_change,dist) > best_path_score:
+                    best_path_score = minimizer(elevation_change, dist)
+                    best_elevation_change = elevation_change
+                    best_path_dist = dist
+                    best_path = path
                 
         return best_path,best_elevation_change,best_path_dist
